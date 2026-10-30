@@ -1,15 +1,17 @@
-💰 FAMT Control — Aplicativo de Controle de Gastos Pessoais
+**💰 FAMT Control — Aplicativo de Controle de Gastos Pessoais**
+
 > **Documentação Oficial do Repositório e Guia de Execução**  
 > *Engenharia de Software e Gestão Híbrida de Projetos (Waterfall + Scrum)*  
 > **Universidade de Mogi das Cruzes (UMC)** — Semestre 2026/2  
 > **Orientador:** Prof. Renato  
----
+
 👥 Squad FAMT e Atribuições
-Integrante	Matrícula (RA)	Papel Técnico	Atribuições Principais
-Franciellen Moreira Santos	11261403634	Gerente de Projetos (PM)	Coordenação geral, cronograma CPM, documentação TAP/EAP e matriz de comunicação.
-Maria Augusta S. Toledo	11241102057	Product Owner (PO) / QA	Priorização do Backlog, aceite de User Stories, BDD e suíte de testes com Pytest.
-André Mitchel Ruiz Santos	11231102531	Tech Lead / Dev Backend & UI	Arquitetura Python/Streamlit, motor contábil, gráficos Plotly e segurança.
-Thamirys Matos da Silva	11261403155	Engenheira de Dados (DBA)	Modelagem relacional em 3FN, criação do schema relacional, constraints e índices.
+Integrante |	Matrícula (RA) |	Papel Técnico | 	Atribuições Principais
+Franciellen Moreira Santos |	11261403634 |	Gerente de Projetos (PM) |	Coordenação geral, cronograma CPM, documentação TAP/EAP e matriz de comunicação.
+Maria Augusta S. Toledo |	11241102057 |	Product Owner (PO) / QA |	Priorização do Backlog, aceite de User Stories, BDD e suíte de testes com Pytest.
+André Mitchel Ruiz Santos |	11231102531 |	Tech Lead / Dev Backend & UI |	Arquitetura Python/Streamlit, motor contábil, gráficos Plotly e segurança.
+Thamirys Matos da Silva |	11261403155 |	Engenheira de Dados (DBA) | 	Modelagem relacional em 3FN, criação do schema relacional, constraints e índices.
+
 ---
 📌 Visão Geral do Projeto
 O FAMT Control foi concebido para resolver a desorganização financeira e a falta de controle sistemático de receitas e despesas entre estudantes universitários e jovens profissionais. Em vez de planilhas complexas ou anotações informais, o sistema oferece um aplicativo web enxuto, responsivo, seguro e intuitivo.
@@ -69,7 +71,7 @@ FAMT-Control/
 └── tests/                      # Suíte de testes unitários e de integração
     └── test_famt_control.py
 ```
----
+---        
 🛠️ Como Instalar e Executar Localmente
 Passo a Passo
 Acessar o diretório do projeto:
@@ -90,12 +92,14 @@ Executar a aplicação Streamlit:
    streamlit run app.py
    ```
 ---
-🧪 Qualidade e Testes
+**🧪 Qualidade e Testes**
+
 A qualidade do software é validada conforme as diretrizes da norma ISO/IEC 25010 e executada via Pytest:
 ```bash
 pytest -v
 ```
 ---
-📄 Licença e Direitos Autorais
+**📄 Licença e Direitos Autorais**
+
 Desenvolvido pela Squad FAMT para a disciplina de Gestão de Projetos de Software do Curso de Engenharia de Software da Universidade de Mogi das Cruzes (UMC).
 © 2026 Squad FAMT. Todos os direitos reservados.
