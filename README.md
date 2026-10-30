@@ -1,367 +1,289 @@
-# FAMT Control — Projeto de Transição (Waterfall → Scrum)
+# 💜 FAMT Control — Projeto de Transição (Waterfall → Scrum)
 
-## 📌 Identificação do Projeto e Governança
+## 📌 Identificação do Projeto
 
-**Universidade:** Universidade de Mogi das Cruzes (UMC)  
+**Projeto:** FAMT Control  
+**Instituição:** Universidade de Mogi das Cruzes (UMC)  
 **Curso:** Engenharia de Software  
-**Disciplina:** Gestão de Projetos de Software (Semestre 2026/2)  
-**Professor Orientador:** Prof. Renato  
-**Sistema:** FAMT Control — Aplicativo de Controle de Gastos Pessoais  
-**Abordagem Metodológica:** Hibridismo Metodológico (Preditivo/Waterfall + Ágil/Scrum)
+**Disciplina:** Gestão de Projetos de Software  
+**Semestre:** 2026/2  
+**Professor:** Renato  
+**Metodologia:** Transição híbrida de Waterfall para Scrum  
 
 ---
 
-## 👥 Squad FAMT de Desenvolvimento
+## 👥 Squad FAMT
 
-| Integrante | RA | Papel Técnico | Atribuições Principais |
-|---|---|---|---|
-| Franciellen Moreira Santos | 11261403634 | Gerente de Projetos (PM) | Coordenação geral, cronograma CPM/Gantt, TAP/EAP, documentação e comunicação. |
-| Maria Augusta S. Toledo | 11241102057 | Product Owner (PO) / QA | Priorização do Backlog, critérios de aceite das User Stories, BDD e qualidade. |
-| André Mitchel Ruiz Santos | 11231102531 | Tech Lead / Desenvolvedor | Arquitetura Python/Streamlit, regras de negócio, interface e gráficos Plotly. |
-| Thamirys Matos da Silva | 11261403155 | Engenheira de Dados (DBA) | Modelagem relacional, estrutura do banco de dados, constraints e chaves estrangeiras. |
-
----
-
-## 🔄 Contextualização da Transição Metodológica (Waterfall → Scrum)
-
-O projeto FAMT Control foi desenvolvido inicialmente na M1, utilizando uma abordagem preditiva baseada nos conceitos do PMI (Waterfall). Nessa etapa, foi realizado o planejamento do projeto por meio do Termo de Abertura do Projeto (TAP), da Estrutura Analítica do Projeto (EAP/WBS), do Diagrama de Precedência (PDM), da identificação do Caminho Crítico (CPM) e da definição da linha de base orçamentária de R$ 11.913,00, com BAC de R$ 12.454,50.
-
-Na etapa de transição, o planejamento inicialmente estruturado foi aproveitado como base para a organização do trabalho utilizando o Scrum Framework. O escopo definido na EAP foi convertido em um Product Backlog, organizado em Histórias de Usuário (User Stories), permitindo dividir as funcionalidades em entregas menores e priorizadas.
-
-Além da mudança na organização do trabalho, a aplicação também passou por uma evolução técnica. Na versão inicial, o sistema utilizava SQLite para armazenar os dados. Durante a transição, foi realizada a migração para MySQL, permitindo utilizar um banco de dados externo à aplicação e configurado para conexão com o ambiente de implantação.
-
-Também foi acrescentada a funcionalidade de redefinição de senha, ampliando as opções disponíveis na tela de autenticação.
-
-Dessa forma, a transição representou tanto uma evolução na organização do projeto quanto uma atualização técnica da aplicação.
-
----
-
-## 🗺️ Mapeamento Hierárquico de Tradução (EAP → Scrum)
-
-Para manter a relação entre o planejamento inicial e a execução ágil, foi utilizada a seguinte correspondência entre os elementos da EAP e os elementos do Scrum:
-
-| Nível Preditivo (PMI / EAP) | Nível Ágil (Scrum) | Definição no FAMT Control |
+| Integrante | RA | Responsabilidade |
 |---|---|---|
-| Projeto / Módulo | Épico | Grandes conjuntos de funcionalidades da aplicação, como Gestão Financeira e Painel de Alertas. |
-| Pacote de Trabalho (EAP) | Funcionalidade / Feature | Conjunto de funcionalidades que gera valor ao usuário. |
-| Requisitos Detalhados | História de Usuário (User Story) | Descrição de uma necessidade do usuário e do resultado esperado. |
-| Atividades do Cronograma | Tarefas Técnicas (Tasks) | Atividades de desenvolvimento, banco de dados, interface e qualidade. |
-
-Esse mapeamento foi utilizado para orientar a organização do Product Backlog, mantendo a relação entre o escopo planejado na M1 e as funcionalidades trabalhadas na transição.
+| Franciellen Moreira Santos | 11261403634 | Product Manager (PM) |
+| Maria Augusta S. Toledo | 11241102057 | Product Owner (PO) / QA |
+| André Mitchel Ruiz Santos | 11231102531 | Tech Lead / Developer |
+| Thamirys Matos da Silva | 11261403155 | DBA |
 
 ---
 
-## 📋 Product Backlog Ordenado do FAMT Control
+## 📖 1. Contextualização do Projeto
 
-O escopo inicial foi organizado em seis Histórias de Usuário (US-001 a US-006), contemplando as principais funcionalidades do sistema. Durante a transição, a funcionalidade de redefinição de senha foi acrescentada como uma nova necessidade.
+O FAMT Control é um sistema de controle financeiro pessoal, desenvolvido com o objetivo de auxiliar os usuários na organização de suas finanças, permitindo o gerenciamento de receitas, despesas, metas financeiras e acompanhamento de informações por meio de gráficos e indicadores.
 
-### 1. US-001 — Cadastro de Transações Financeiras
+Inicialmente, o projeto foi planejado utilizando a metodologia tradicional Waterfall (Cascata), com a elaboração dos documentos de gerenciamento de projetos, incluindo:
 
-**User Story:** Como estudante universitário, quero cadastrar minhas receitas e despesas com descrição, valor e categoria, para manter minha contabilidade pessoal atualizada.
+- Termo de Abertura do Projeto (TAP);
+- Estrutura Analítica do Projeto (EAP);
+- Diagrama de Precedência (PDM);
+- Método do Caminho Crítico (CPM);
+- Definição da linha de base de custos.
 
-- Prioridade PO: Alta / Essencial
-- Estimativa técnica: 5 Story Points (SP)
+**Linha de base de custos:** R$ 11.913,00  
+**Orçamento total (BAC):** R$ 12.454,50
 
-### 2. US-002 — Painel de Saldos e Indicadores
+Na segunda etapa, o projeto passou por uma transição para a metodologia ágil Scrum, transformando a estrutura inicialmente planejada em um Product Backlog, composto por Histórias de Usuário, critérios de aceitação e tarefas técnicas.
 
-**User Story:** Como usuário do sistema, quero visualizar meus cartões de Receita, Despesa e Saldo Atualizado no painel principal, para compreender minha situação financeira.
-
-- Prioridade PO: Alta / Essencial
-- Estimativa técnica: 3 Story Points (SP)
-
-### 3. US-003 — Central de Notificações e Alertas Contábeis
-
-**User Story:** Como usuário do FAMT Control, quero receber alertas sobre minha situação financeira e confirmações de lançamentos, para acompanhar melhor minhas receitas e despesas.
-
-- Prioridade PO: Média / Valor
-- Estimativa técnica: 5 Story Points (SP)
-
-### 4. US-004 — Gestão de Metas Financeiras Mensais
-
-**User Story:** Como estudante, quero definir uma meta de economia e acompanhar a porcentagem atingida, para planejar meu orçamento de forma disciplinada.
-
-- Prioridade PO: Média
-- Estimativa técnica: 3 Story Points (SP)
-
-### 5. US-005 — Visualização de Gráficos e Ranking de Despesas
-
-**User Story:** Como usuário, quero analisar gráficos comparativos de receitas e despesas e a distribuição por categoria, para identificar meus maiores gastos.
-
-- Prioridade PO: Média
-- Estimativa técnica: 5 Story Points (SP)
-
-### 6. US-006 — Autenticação e Troca de Senha no Primeiro Acesso
-
-**User Story:** Como usuário cadastrado, quero alterar minha senha provisória no primeiro acesso, para personalizar minhas credenciais de entrada.
-
-- Prioridade PO: Alta / Segurança
-- Estimativa técnica: 2 Story Points (SP)
-
-### 7. US-007 — Redefinição de Senha
-
-**User Story:** Como usuário cadastrado que esqueceu sua senha, quero informar meu e-mail e cadastrar uma nova senha, para recuperar o acesso à minha conta.
-
-- Prioridade PO: Alta / Segurança
-- Funcionalidade acrescentada durante a transição.
+Durante essa transição, também ocorreu uma evolução técnica do sistema, com a migração do banco de dados SQLite para MySQL e a inclusão da funcionalidade de redefinição de senha.
 
 ---
 
-## 🧪 Critérios de Aceitação em BDD (Behavior-Driven Development)
+## 🔄 2. Transição de Waterfall para Scrum
 
-Os critérios de aceitação foram organizados utilizando a estrutura Gherkin (Dado / Quando / Então), para descrever o comportamento esperado das funcionalidades.
+A transição teve como objetivo adaptar o planejamento tradicional à abordagem ágil, organizando as funcionalidades do sistema de acordo com as necessidades dos usuários.
 
-### Cenário 1: Cadastro de Receita com Atualização e Notificação (US-001)
+A EAP foi utilizada como referência para estruturar as funcionalidades em Histórias de Usuário.
 
-**Dado** que o usuário está autenticado e acessa a área "Lançar".
+### 2.1. Mapeamento da EAP para o Product Backlog
 
-**Quando** preencher o tipo "Receita", valor "150.00", descrição "Bolsa Estágio" e categoria "Salário".
-
-**E** clicar no botão "Salvar Transação no Banco de Dados".
-
-**Então** o sistema deverá salvar a transação na tabela `Transacoes` do MySQL.
-
-**E** atualizar as informações apresentadas no painel.
-
-**E** gerar a notificação correspondente no sistema.
-
-### Cenário 2: Alerta Contábil por Saldo Devedor (US-003)
-
-**Dado** que o total de despesas cadastradas supera o total de receitas acumuladas.
-
-**Quando** o usuário acessar o Painel Principal ou a Central de Alertas.
-
-**Então** o sistema deverá apresentar um alerta visual sobre a situação financeira.
-
-**E** disponibilizar o aviso na Central de Notificações.
-
-### Cenário 3: Primeiro Acesso com Troca Obrigatória de Senha (US-006)
-
-**Dado** que um novo usuário realiza o login utilizando a senha provisória.
-
-**E** o campo `primeiro_acesso` na tabela `Usuarios` possui o valor 1.
-
-**Quando** o sistema identificar que se trata do primeiro acesso.
-
-**Então** deverá apresentar a tela de alteração de senha.
-
-**E** exigir a definição de uma nova senha antes de liberar o acesso ao painel principal.
-
-### Cenário 4: Redefinição de Senha (US-007)
-
-**Dado** que o usuário possui um e-mail cadastrado no sistema.
-
-**Quando** acessar a aba "Redefinir Senha", informar o e-mail, digitar uma nova senha e confirmar a senha.
-
-**E** clicar no botão "Salvar Nova Senha".
-
-**Então** o sistema deverá verificar se o e-mail está cadastrado e se as senhas informadas coincidem.
-
-**E** atualizar o hash da senha na tabela `Usuarios` do MySQL.
-
-**E** apresentar uma mensagem de confirmação da redefinição.
-
-**Observação:** Na implementação atual, a redefinição é feita diretamente pelo formulário, mediante o e-mail cadastrado. Não há envio de código ou link de confirmação por e-mail.
-
----
-
-## ⚙️ Decomposição Técnica em Sprint Tasks e Estimativas
-
-As atividades técnicas foram organizadas de acordo com as Histórias de Usuário e as necessidades de evolução da aplicação.
-
-| ID Task | Descrição da Atividade Técnica | História Vinculada | Especialidade | Estimativa |
-|---|---|---|---|---|
-| TSK-101 | Modelagem das tabelas `Usuarios` e `Transacoes`, com chaves estrangeiras no MySQL. | US-001 | Backend / Banco de Dados | 3 horas |
-| TSK-102 | Desenvolvimento do formulário de lançamento de receitas e despesas no Streamlit. | US-001 | Frontend | 4 horas |
-| TSK-103 | Implementação do cálculo de saldos e organização das transações por data. | US-002 | Backend | 3 horas |
-| TSK-104 | Construção do componente de notificações e alertas. | US-003 | Frontend | 5 horas |
-| TSK-105 | Geração dos gráficos de barras e rosca utilizando Plotly Express. | US-005 | Frontend / Dados | 4 horas |
-| TSK-106 | Implementação do hash SHA-256 e validação de primeiro acesso. | US-006 | Segurança | 4 horas |
-| TSK-107 | Desenvolvimento do formulário de redefinição de senha e atualização no MySQL. | US-007 | Backend / Segurança | Atividade acrescentada na transição |
-
-*As estimativas representam o planejamento das atividades e não necessariamente o tempo efetivamente utilizado para sua execução.*
-
----
-
-## 🏆 Governança e Critérios de Qualidade: DoR e DoD
-
-### Definition of Ready (DoR) — Critérios para Entrar na Sprint
-
-- Requisito funcional claro e alinhado com a regra de negócio do FAMT Control.
-- Critérios de aceitação definidos no formato BDD (Dado / Quando / Então).
-- Dependências relacionadas ao banco de dados MySQL e aos componentes visuais identificadas.
-- Estimativa relativa definida pela equipe por meio de Planning Poker.
-- História de Usuário compreendida pela equipe e com condições para desenvolvimento.
-
-### Definition of Done (DoD) — Critérios para Considerar Concluído
-
-- Código Python integrado à aplicação Streamlit.
-- Operações de persistência executadas utilizando o banco de dados MySQL.
-- Gráficos Plotly apresentados corretamente na interface.
-- Navegação entre as funcionalidades testada.
-- Validações dos formulários e mensagens de retorno implementadas.
-- Critérios de aceitação da História de Usuário atendidos.
-- Revisão e validação da entrega pela equipe.
-
----
-
-## 🔗 Matriz de Rastreabilidade (EAP x Product Backlog)
-
-A matriz relaciona os pacotes de trabalho definidos na EAP inicial às Histórias de Usuário organizadas no Product Backlog.
-
-| Cód. EAP | Pacote de Trabalho Original (PMI) | Histórias de Usuário Vinculadas |
-|---|---|---|
-| EAP 2.1 | Módulo de Gestão de Transações | US-001, US-002 |
-| EAP 2.2 | Módulo de Alertas e Notificações | US-003 |
-| EAP 2.3 | Módulo de Planejamento de Metas | US-004 |
-| EAP 3.1 | Módulo de Análise Gráfica e Segurança | US-005, US-006 |
-
-A US-007 foi acrescentada durante a transição como uma evolução da funcionalidade de autenticação, relacionada à redefinição de senha.
-
-A matriz demonstra a relação entre o planejamento inicial e a organização das funcionalidades no Scrum. A conclusão individual de cada História de Usuário deve ser registrada conforme sua validação pela equipe.
-
----
-
-## 🗄️ Arquitetura da Aplicação e Banco de Dados
-
-O FAMT Control utiliza Python e Streamlit para a aplicação web, com MySQL para persistência dos dados e Plotly para a apresentação dos gráficos.
-
-### Tecnologias Utilizadas
-
-| Tecnologia | Finalidade |
+| Estrutura da EAP | Elemento no Scrum |
 |---|---|
-| Python | Linguagem de programação principal. |
-| Streamlit | Desenvolvimento da interface web. |
-| MySQL | Armazenamento e gerenciamento dos dados. |
-| MySQL Connector/Python | Comunicação entre a aplicação Python e o banco MySQL. |
-| Pandas | Manipulação e organização dos dados. |
-| Plotly Express | Construção de gráficos e visualizações. |
-| Plotly Graph Objects | Criação de elementos gráficos personalizados. |
-| Hashlib | Geração do hash SHA-256 das senhas. |
-| HTML e CSS | Personalização visual da aplicação. |
+| Planejamento do projeto | Product Backlog |
+| Levantamento de requisitos | Histórias de Usuário |
+| Desenvolvimento das funcionalidades | Sprint Backlog |
+| Atividades técnicas | Tasks |
+| Entregas do projeto | Incrementos do produto |
+| Validação do sistema | Critérios de aceitação e Definition of Done |
 
-### Estrutura do Banco de Dados
+---
 
-Durante a transição, o banco de dados SQLite foi substituído pelo MySQL.
+## 📋 3. Product Backlog — Histórias de Usuário
 
-A aplicação utiliza duas tabelas principais:
+O escopo inicial foi organizado em seis Histórias de Usuário (US-001 a US-006), contemplando as principais funcionalidades do sistema. Durante a transição, foi acrescentada a US-007, referente à redefinição de senha.
 
-**Tabela `Usuarios`**
+| ID | História de Usuário | Prioridade |
+|---|---|---|
+| US-001 | Como usuário, quero cadastrar receitas e despesas para controlar minhas movimentações financeiras. | Alta |
+| US-002 | Como usuário, quero visualizar um dashboard com informações financeiras para acompanhar minha situação financeira. | Alta |
+| US-003 | Como usuário, quero receber notificações e alertas para acompanhar informações importantes sobre minhas finanças. | Média |
+| US-004 | Como usuário, quero cadastrar e acompanhar metas financeiras para organizar meus objetivos. | Média |
+| US-005 | Como usuário, quero visualizar gráficos financeiros para compreender melhor meus gastos e receitas. | Média |
+| US-006 | Como usuário, quero alterar minha senha no primeiro acesso para garantir maior controle sobre minha conta. | Alta |
+| US-007 | Como usuário, quero redefinir minha senha caso a esqueça, para recuperar o acesso ao sistema. | Média |
+
+---
+
+## 🧪 4. Critérios de Aceitação — BDD
+
+Os critérios de aceitação foram estruturados utilizando o formato BDD (Behavior-Driven Development), com os elementos:
+
+- **Dado:** contexto inicial;
+- **Quando:** ação realizada;
+- **Então:** resultado esperado.
+
+### 4.1. US-001 — Cadastro de movimentações financeiras
+
+**Cenário: Cadastro de uma nova movimentação**
+
+- **Dado** que o usuário esteja autenticado no sistema;
+- **Quando** preencher as informações de uma receita ou despesa e confirmar o cadastro;
+- **Então** o sistema deverá registrar a movimentação e atualizar as informações financeiras correspondentes.
+
+### 4.2. US-003 — Alertas de dívidas
+
+**Cenário: Exibição de alerta financeiro**
+
+- **Dado** que existam informações financeiras cadastradas pelo usuário;
+- **Quando** o sistema identificar uma situação que necessite de atenção;
+- **Então** deverá apresentar um alerta ou dica financeira na interface.
+
+### 4.3. US-006 — Alteração de senha no primeiro acesso
+
+**Cenário: Primeiro acesso do usuário**
+
+- **Dado** que o usuário esteja realizando seu primeiro acesso ao sistema;
+- **Quando** efetuar o login com a senha inicial;
+- **Então** o sistema deverá solicitar a alteração da senha antes de permitir o acesso às demais funcionalidades.
+
+### 4.4. US-007 — Redefinição de senha
+
+**Cenário: Usuário deseja redefinir sua senha**
+
+- **Dado** que o usuário esteja na tela de redefinição de senha;
+- **Quando** informar seu e-mail cadastrado, uma nova senha e a confirmação da nova senha;
+- **Então** o sistema deverá validar as informações e atualizar a senha vinculada à conta, permitindo o acesso com a nova credencial.
+
+**Observação:** A funcionalidade implementada realiza a redefinição diretamente por meio do e-mail cadastrado e da nova senha informada. Não utiliza envio de código de confirmação ou link por e-mail.
+
+---
+
+## 🏃 5. Sprint Backlog — Tarefas Técnicas
+
+As histórias de usuário foram desmembradas em tarefas técnicas para organizar o desenvolvimento e facilitar o acompanhamento das atividades.
+
+| ID | Tarefa | Descrição |
+|---|---|---|
+| TSK-101 | Estruturação do banco de dados | Configuração do banco de dados MySQL e criação das tabelas necessárias. |
+| TSK-102 | Gerenciamento de usuários | Implementação do cadastro, autenticação e gerenciamento de usuários. |
+| TSK-103 | Gerenciamento de transações | Implementação das operações de cadastro e gerenciamento de receitas e despesas. |
+| TSK-104 | Dashboard financeiro | Apresentação dos indicadores e informações financeiras do usuário. |
+| TSK-105 | Gráficos e metas | Implementação da visualização gráfica e do acompanhamento das metas financeiras. |
+| TSK-106 | Notificações e primeiro acesso | Implementação dos alertas e da alteração obrigatória de senha no primeiro acesso. |
+| TSK-107 | Redefinição de senha | Implementação da funcionalidade de redefinição de senha utilizando o e-mail cadastrado. |
+
+---
+
+## 📌 6. Definition of Ready (DoR) e Definition of Done (DoD)
+
+### 6.1. Definition of Ready (DoR)
+
+Uma História de Usuário está pronta para ser desenvolvida quando:
+
+- Possui descrição clara e compreensível;
+- Apresenta valor para o usuário;
+- Possui critérios de aceitação definidos;
+- Está suficientemente detalhada para orientar o desenvolvimento;
+- Possui dependências identificadas;
+- Está priorizada no Product Backlog.
+
+### 6.2. Definition of Done (DoD)
+
+Uma funcionalidade pode ser considerada concluída quando:
+
+- O desenvolvimento da funcionalidade foi realizado;
+- A implementação está integrada ao sistema;
+- A conexão com o banco de dados MySQL está funcionando quando necessária;
+- Os critérios de aceitação foram atendidos;
+- Foram realizadas as verificações necessárias;
+- Não existem erros conhecidos que impeçam o funcionamento da funcionalidade;
+- A documentação correspondente foi atualizada quando necessário.
+
+---
+
+## 🔗 7. Matriz de Rastreabilidade
+
+A matriz de rastreabilidade permite relacionar os elementos da EAP às Histórias de Usuário correspondentes, mantendo a ligação entre o planejamento inicial e o desenvolvimento ágil.
+
+| EAP | Descrição | História de Usuário |
+|---|---|---|
+| 2.1 | Gerenciamento de movimentações financeiras | US-001 |
+| 2.2 | Visualização das informações financeiras | US-002 |
+| 2.3 | Notificações e alertas | US-003 |
+| 3.1 | Metas e acompanhamento financeiro | US-004 |
+
+**Evolução do escopo:** A US-005, relacionada aos gráficos financeiros, e a US-006, referente à alteração de senha no primeiro acesso, foram organizadas no Product Backlog conforme as funcionalidades do sistema. A US-007, referente à redefinição de senha, foi acrescentada durante a transição para Scrum, representando uma evolução do escopo inicial.
+
+---
+
+## 🛠️ 8. Arquitetura e Tecnologias Utilizadas
+
+O sistema foi desenvolvido utilizando Python e Streamlit, com banco de dados MySQL para armazenamento das informações.
+
+### 8.1. Tecnologias
+
+| Tecnologia | Utilização |
+|---|---|
+| Python | Linguagem de programação |
+| Streamlit | Desenvolvimento da interface web |
+| MySQL | Banco de dados relacional |
+| Pandas | Manipulação e análise de dados |
+| Plotly | Criação de gráficos |
+| mysql-connector-python | Conexão entre Python e MySQL |
+| hashlib | Geração de hash para senhas |
+
+### 8.2. Estrutura do Banco de Dados
+
+A transição técnica também envolveu a migração do banco de dados SQLite para MySQL.
+
+Foram utilizadas, entre outras, as seguintes tabelas:
+
+**Tabela: Usuarios**
 
 | Campo | Descrição |
 |---|---|
-| id | Identificador do usuário, com incremento automático. |
-| email | E-mail cadastrado, único e obrigatório. |
-| senha_hash | Hash da senha do usuário. |
-| primeiro_acesso | Indicador de primeiro acesso, utilizado para exigir a troca da senha provisória. |
+| id | Identificador do usuário |
+| email | E-mail cadastrado |
+| senha_hash | Hash da senha |
+| primeiro_acesso | Indica se o usuário precisa alterar a senha no primeiro acesso |
 
-**Tabela `Transacoes`**
+**Tabela: Transacoes**
 
 | Campo | Descrição |
 |---|---|
-| id | Identificador da transação, com incremento automático. |
-| usuario_id | Identificador do usuário relacionado à transação. |
-| valor | Valor financeiro da transação. |
-| tipo | Tipo de movimentação: Receita ou Despesa. |
-| data | Data e horário do lançamento. |
-| descricao | Descrição da movimentação. |
-| categoria | Categoria financeira da movimentação. |
+| id | Identificador da transação |
+| usuario_id | Identificador do usuário relacionado |
+| valor | Valor da movimentação |
+| tipo | Tipo da movimentação |
+| data | Data da movimentação |
+| descricao | Descrição da movimentação |
+| categoria | Categoria financeira |
 
-A tabela `Transacoes` possui uma chave estrangeira (`usuario_id`) relacionada à tabela `Usuarios`, com exclusão em cascata (`ON DELETE CASCADE`).
+A tabela `Transacoes` possui uma chave estrangeira relacionada à tabela `Usuarios`, utilizando o relacionamento com exclusão em cascata (`ON DELETE CASCADE`).
 
-### Conexão com o MySQL
+---
 
-A aplicação utiliza a biblioteca `mysql.connector` para realizar a conexão com o banco de dados.
+## 🔐 9. Segurança e Gerenciamento de Senhas
 
-As informações de conexão são obtidas por meio do recurso `st.secrets` do Streamlit, utilizando as configurações de host, usuário, senha, banco de dados e porta.
+O sistema utiliza hash SHA-256 por meio da biblioteca `hashlib` para armazenar as senhas, evitando que sejam gravadas diretamente em texto puro no banco de dados.
 
-No ambiente Streamlit Cloud, as credenciais devem ser configuradas na seção **Secrets**, seguindo a estrutura:
+É importante destacar que SHA-256 é uma função de hash, e não uma criptografia reversível.
+
+Para aplicações em produção, recomenda-se utilizar algoritmos específicos para armazenamento seguro de senhas, como Argon2 ou bcrypt, além de implementar mecanismos adicionais de verificação de identidade e recuperação de acesso.
+
+As credenciais de conexão com o banco de dados são armazenadas utilizando o recurso `st.secrets` do Streamlit, evitando deixar informações sensíveis diretamente no código-fonte.
+
+Exemplo de configuração:
 
 ```toml
 [mysql]
-host = "SEU_HOST"
-user = "SEU_USUARIO"
-password = "SUA_SENHA"
-database = "SEU_BANCO"
+host = "localhost"
+user = "seu_usuario"
+password = "sua_senha"
+database = "famt_control"
 port = 3306
 ```
 
-As credenciais reais não devem ser publicadas no repositório.
-
 ---
 
-## 🔐 Segurança e Autenticação
+## ▶️ 10. Como Executar o Projeto
 
-O sistema possui mecanismos de autenticação e controle de acesso, incluindo:
+### 10.1. Pré-requisitos
 
-- Cadastro de usuários por e-mail.
-- Armazenamento de senhas utilizando hash SHA-256.
-- Validação das credenciais durante o login.
-- Troca obrigatória da senha provisória no primeiro acesso.
-- Funcionalidade de redefinição de senha.
-- Separação das transações por usuário.
-- Utilização de chave estrangeira para relacionar usuários e transações.
-- Validação dos dados informados nos formulários.
+Antes de executar o projeto, é necessário possuir:
 
-A função `hashlib.sha256()` é utilizada para gerar o hash das senhas antes de seu armazenamento no banco de dados. SHA-256 é uma função de hash, e não um método de criptografia reversível.
+- Python instalado;
+- MySQL instalado e configurado;
+- Banco de dados `famt_control` criado;
+- Arquivo de configuração das credenciais do MySQL;
+- Dependências do projeto instaladas.
 
-**Observação de segurança:** para uma aplicação em produção, recomenda-se utilizar algoritmos específicos para armazenamento de senhas, como Argon2 ou bcrypt, além de implementar uma etapa de verificação de identidade na redefinição de senha.
+### 10.2. Instalação das dependências
 
----
-
-## 💻 Como Executar a Aplicação
-
-### Pré-requisitos
-
-- Python 3.10 ou superior.
-- MySQL disponível e configurado.
-- Gerenciador de pacotes pip.
-- Acesso às credenciais do banco de dados.
-
-### 1. Clonar o Repositório
-
-```bash
-git clone URL_DO_REPOSITORIO
-```
-
-Acesse a pasta do projeto:
-
-```bash
-cd NOME_DA_PASTA
-```
-
-### 2. Criar o Ambiente Virtual
-
-```bash
-python -m venv venv
-```
-
-Ativar no Windows:
-
-```bash
-venv\Scripts\activate
-```
-
-### 3. Instalar as Dependências
+No terminal, execute:
 
 ```bash
 pip install streamlit mysql-connector-python pandas plotly
 ```
 
-### 4. Configurar o Banco de Dados
+### 10.3. Configuração do banco de dados
 
-Configure as credenciais de conexão com o MySQL no ambiente de execução.
+Configure o acesso ao MySQL no arquivo de secrets do Streamlit, utilizando as informações de conexão correspondentes ao ambiente.
 
-Na implantação pelo Streamlit Cloud, utilize a seção Secrets com a estrutura apresentada anteriormente.
+### 10.4. Executar a aplicação
 
-A aplicação possui uma rotina de inicialização que cria as tabelas `Usuarios` e `Transacoes` caso ainda não existam.
-
-### 5. Executar a Aplicação Web
+Na pasta onde está localizado o arquivo principal do projeto, execute:
 
 ```bash
 python -m streamlit run famt-control-app-com-logo-transicao.py
 ```
 
-Após iniciar, acesse o endereço local apresentado no terminal, normalmente:
+Após a execução, a aplicação poderá ser acessada pelo navegador no endereço:
 
 ```text
 http://localhost:8501
@@ -369,35 +291,40 @@ http://localhost:8501
 
 ---
 
-## 🧪 Qualidade e Validação
+## ✅ 11. Qualidade e Validação
 
-Os critérios BDD foram utilizados para descrever os comportamentos esperados das funcionalidades, orientando a validação das entregas.
+A qualidade do sistema é acompanhada por meio dos critérios de aceitação definidos nas Histórias de Usuário e das verificações realizadas durante o desenvolvimento.
 
-Entre os principais pontos de verificação estão:
+A utilização do BDD auxilia na descrição do comportamento esperado das funcionalidades, permitindo relacionar os requisitos às validações do sistema.
 
-- Cadastro e armazenamento de receitas e despesas.
-- Atualização dos indicadores financeiros.
-- Exibição dos alertas e notificações.
-- Funcionamento das metas e visualizações gráficas.
-- Autenticação e troca de senha no primeiro acesso.
-- Redefinição de senha.
-- Conexão e persistência de dados no MySQL.
+As verificações devem considerar:
 
-Os cenários descritos nesta documentação representam critérios de aceitação. A execução de uma suíte automatizada com Pytest deve ser documentada separadamente, caso os respectivos arquivos de testes estejam implementados e disponíveis no projeto.
+- Cadastro e autenticação de usuários;
+- Registro e gerenciamento de receitas e despesas;
+- Atualização das informações do dashboard;
+- Exibição de gráficos e metas;
+- Funcionamento dos alertas;
+- Alteração de senha no primeiro acesso;
+- Redefinição de senha;
+- Persistência e integridade das informações no MySQL.
+
+A existência de uma suíte automatizada de testes deve ser documentada somente quando os respectivos testes estiverem implementados e disponíveis no projeto.
 
 ---
 
-## 🎯 Conclusão do Hibridismo
+## 🎯 12. Considerações Finais
 
-A transição do FAMT Control demonstra como o planejamento preditivo realizado na M1 pode servir como base para uma organização ágil do desenvolvimento.
+A transição do FAMT Control da metodologia Waterfall para Scrum representou uma evolução na organização e no gerenciamento do projeto.
 
-A EAP inicialmente elaborada foi utilizada como referência para estruturar o Product Backlog e organizar as Histórias de Usuário, permitindo uma visão mais detalhada das funcionalidades e atividades técnicas.
+O planejamento inicial, estruturado por meio de documentos tradicionais de gerenciamento, serviu como base para a construção do Product Backlog e a organização das funcionalidades em Histórias de Usuário e tarefas técnicas.
 
-Além da adaptação metodológica, o sistema passou por uma evolução técnica com a migração do SQLite para o MySQL e a inclusão da funcionalidade de redefinição de senha.
+Além da adaptação metodológica, o projeto passou por uma evolução técnica com a migração do banco de dados SQLite para MySQL e a inclusão da funcionalidade de redefinição de senha.
 
-Dessa forma, o projeto manteve a continuidade do escopo inicialmente planejado e avançou em sua implementação, incorporando melhorias na estrutura de dados, na autenticação e na organização do trabalho da equipe.
+Dessa forma, o projeto demonstra a aplicação prática dos conceitos de gerenciamento de projetos, desenvolvimento ágil, organização de requisitos, evolução de software e qualidade de sistemas.
 
-## 📄 Licença e Direitos Autorais
+---
+
+## 📄 13. Licença e Direitos Autorais
 
 Este projeto foi desenvolvido pela **Squad FAMT** para fins acadêmicos, como parte das atividades do curso de Engenharia de Software da Universidade de Mogi das Cruzes (UMC).
 
@@ -410,7 +337,3 @@ Este projeto foi desenvolvido pela **Squad FAMT** para fins acadêmicos, como pa
   <em>Seu dinheiro sob controle.</em><br><br>
   Desenvolvido com dedicação pela Squad FAMT.
 </p>
-
----
-
-**Projeto acadêmico desenvolvido pelo Squad FAMT — Engenharia de Software | UMC | 2026/2.**
