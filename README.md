@@ -40,7 +40,7 @@ Inicialmente, o projeto foi planejado utilizando a metodologia tradicional Water
 
 Na segunda etapa, o projeto passou por uma transição para a metodologia ágil Scrum, transformando a estrutura inicialmente planejada em um Product Backlog, composto por Histórias de Usuário, critérios de aceitação e tarefas técnicas.
 
-Durante essa transição, também ocorreu uma evolução técnica do sistema, com a migração do banco de dados SQLite para MySQL e a inclusão da funcionalidade de redefinição de senha.
+Durante essa transição, também ocorreu uma evolução técnica do sistema, com a migração do banco de dados SQLite para MySQL, agora hospedado na nuvem por meio da plataforma Aiven, além da inclusão da funcionalidade de redefinição de senha.
 
 ---
 
@@ -129,7 +129,7 @@ As histórias de usuário foram desmembradas em tarefas técnicas para organizar
 
 | ID | Tarefa | Descrição |
 |---|---|---|
-| TSK-101 | Estruturação do banco de dados | Configuração do banco de dados MySQL e criação das tabelas necessárias. |
+| TSK-101 | Estruturação do banco de dados | Configuração do banco de dados MySQL na Aiven e criação das tabelas necessárias. |
 | TSK-102 | Gerenciamento de usuários | Implementação do cadastro, autenticação e gerenciamento de usuários. |
 | TSK-103 | Gerenciamento de transações | Implementação das operações de cadastro e gerenciamento de receitas e despesas. |
 | TSK-104 | Dashboard financeiro | Apresentação dos indicadores e informações financeiras do usuário. |
@@ -158,7 +158,7 @@ Uma funcionalidade pode ser considerada concluída quando:
 
 - O desenvolvimento da funcionalidade foi realizado;
 - A implementação está integrada ao sistema;
-- A conexão com o banco de dados MySQL está funcionando quando necessária;
+- A conexão com o banco de dados MySQL hospedado na Aiven está funcionando quando necessária;
 - Os critérios de aceitação foram atendidos;
 - Foram realizadas as verificações necessárias;
 - Não existem erros conhecidos que impeçam o funcionamento da funcionalidade;
@@ -183,7 +183,7 @@ A matriz de rastreabilidade permite relacionar os elementos da EAP às História
 
 ## 🛠️ 8. Arquitetura e Tecnologias Utilizadas
 
-O sistema foi desenvolvido utilizando Python e Streamlit, com banco de dados MySQL para armazenamento das informações.
+O sistema foi desenvolvido utilizando Python e Streamlit, com banco de dados MySQL hospedado na plataforma Aiven. Essa configuração permite que as informações sejam armazenadas em um banco de dados externo, acessível pela aplicação por meio de uma conexão remota.
 
 ### 8.1. Tecnologias
 
@@ -191,7 +191,8 @@ O sistema foi desenvolvido utilizando Python e Streamlit, com banco de dados MyS
 |---|---|
 | Python | Linguagem de programação |
 | Streamlit | Desenvolvimento da interface web |
-| MySQL | Banco de dados relacional |
+| MySQL | Sistema gerenciador de banco de dados relacional |
+| Aiven | Plataforma de hospedagem do banco de dados MySQL na nuvem |
 | Pandas | Manipulação e análise de dados |
 | Plotly | Criação de gráficos |
 | mysql-connector-python | Conexão entre Python e MySQL |
@@ -199,7 +200,7 @@ O sistema foi desenvolvido utilizando Python e Streamlit, com banco de dados MyS
 
 ### 8.2. Estrutura do Banco de Dados
 
-A transição técnica também envolveu a migração do banco de dados SQLite para MySQL.
+A transição técnica também envolveu a migração do banco de dados SQLite para MySQL, com a hospedagem da nova estrutura na plataforma Aiven.
 
 Foram utilizadas, entre outras, as seguintes tabelas:
 
@@ -242,12 +243,14 @@ Exemplo de configuração:
 
 ```toml
 [mysql]
-host = "localhost"
-user = "seu_usuario"
-password = "sua_senha"
-database = "famt_control"
-port = 3306
+host = "HOST_FORNECIDO_PELA_AIVEN"
+port = 26250
+user = "avnadmin"
+password = "SUA_SENHA"
+database = "defaultdb"
 ```
+
+**Importante:** Os valores acima são um exemplo de configuração. O endereço do host, a porta, o usuário, a senha e o nome do banco devem corresponder às credenciais disponibilizadas na sua instância MySQL da Aiven. A senha real não deve ser publicada no GitHub.
 
 ---
 
@@ -258,10 +261,12 @@ port = 3306
 Antes de executar o projeto, é necessário possuir:
 
 - Python instalado;
-- MySQL instalado e configurado;
-- Banco de dados `famt_control` criado;
-- Arquivo de configuração das credenciais do MySQL;
+- Acesso à instância MySQL hospedada na Aiven;
+- Credenciais de conexão disponibilizadas pela Aiven;
+- Arquivo de configuração das credenciais do MySQL no Streamlit;
 - Dependências do projeto instaladas.
+
+**Observação:** Não é necessário instalar o MySQL localmente, pois o banco de dados utilizado pelo sistema está hospedado na nuvem pela Aiven.
 
 ### 10.2. Instalação das dependências
 
@@ -271,9 +276,36 @@ No terminal, execute:
 pip install streamlit mysql-connector-python pandas plotly
 ```
 
-### 10.3. Configuração do banco de dados
+### 10.3. Configuração da conexão com a Aiven
 
-Configure o acesso ao MySQL no arquivo de secrets do Streamlit, utilizando as informações de conexão correspondentes ao ambiente.
+Crie o arquivo `secrets.toml` dentro da pasta `.streamlit`, na estrutura do projeto.
+
+Exemplo:
+
+```text
+FAMT_Control/
+│
+├── .streamlit/
+│   └── secrets.toml
+│
+├── famt-control-app-com-logo-transicao.py
+└── ...
+```
+
+No arquivo `secrets.toml`, configure as informações de conexão fornecidas pela Aiven:
+
+```toml
+[mysql]
+host = "HOST_FORNECIDO_PELA_AIVEN"
+port = 26250
+user = "avnadmin"
+password = "SUA_SENHA"
+database = "defaultdb"
+```
+
+As informações devem ser preenchidas conforme os dados da instância MySQL criada na Aiven.
+
+O arquivo `secrets.toml` deve ser mantido fora do repositório público para proteger as credenciais de acesso ao banco de dados.
 
 ### 10.4. Executar a aplicação
 
@@ -306,7 +338,8 @@ As verificações devem considerar:
 - Funcionamento dos alertas;
 - Alteração de senha no primeiro acesso;
 - Redefinição de senha;
-- Persistência e integridade das informações no MySQL.
+- Persistência e integridade das informações no MySQL hospedado na Aiven;
+- Conexão entre a aplicação e o banco de dados remoto.
 
 A existência de uma suíte automatizada de testes deve ser documentada somente quando os respectivos testes estiverem implementados e disponíveis no projeto.
 
@@ -318,9 +351,9 @@ A transição do FAMT Control da metodologia Waterfall para Scrum representou um
 
 O planejamento inicial, estruturado por meio de documentos tradicionais de gerenciamento, serviu como base para a construção do Product Backlog e a organização das funcionalidades em Histórias de Usuário e tarefas técnicas.
 
-Além da adaptação metodológica, o projeto passou por uma evolução técnica com a migração do banco de dados SQLite para MySQL e a inclusão da funcionalidade de redefinição de senha.
+Além da adaptação metodológica, o projeto passou por uma evolução técnica com a migração do banco de dados SQLite para MySQL, sua hospedagem na nuvem por meio da plataforma Aiven e a inclusão da funcionalidade de redefinição de senha.
 
-Dessa forma, o projeto demonstra a aplicação prática dos conceitos de gerenciamento de projetos, desenvolvimento ágil, organização de requisitos, evolução de software e qualidade de sistemas.
+Dessa forma, o projeto demonstra a aplicação prática dos conceitos de gerenciamento de projetos, desenvolvimento ágil, organização de requisitos, evolução de software e utilização de serviços de banco de dados em nuvem.
 
 ---
 
