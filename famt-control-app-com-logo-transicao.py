@@ -1,12 +1,12 @@
 import streamlit as st
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 import mysql.connector
 from mysql.connector import Error, IntegrityError
 from pathlib import Path
 import pandas as pd
 import hashlib
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
 from datetime import datetime
 import plotly.express as px
 import plotly.graph_objects as go
@@ -948,47 +948,51 @@ def obter_conexao():
         st.stop()
 
 
-def enviar_email_provisoria(email_destino: str, senha_provisoria: str) -> bool:
-    """Tenta enviar e-mail com a senha provisória via SMTP se st.secrets['email'] estiver configurado."""
+def enviar_email_provisoria(destino_email: str, senha_provisoria: str) -> bool:
+    """Envia e-mail com a senha provisória utilizando as credenciais [email] em st.secrets."""
     try:
         if "email" not in st.secrets:
             return False
-        smtp_server = st.secrets["email"].get("server", "smtp.gmail.com")
-        smtp_port = int(st.secrets["email"].get("port", 587))
-        usuario_email = st.secrets["email"].get("usuario", "")
-        senha_email = st.secrets["email"].get("senha", "")
-        if not usuario_email or not senha_email:
+        
+        server_host = st.secrets["email"].get("smtp_server", "smtp.gmail.com")
+        server_port = int(st.secrets["email"].get("smtp_port", 587))
+        sender_email = st.secrets["email"].get("sender_email")
+        sender_password = st.secrets["email"].get("sender_password")
+        
+        if not sender_email or not sender_password:
             return False
-        msg = MIMEMultipart("alternative")
-        msg["Subject"] = "🔐 FAMT Control - Sua Senha Provisória de Acesso"
-        msg["From"] = usuario_email
-        msg["To"] = email_destino
-        corpo_html = f"""
+
+        msg = MIMEMultipart()
+        msg['From'] = f"FAMT Control <{sender_email}>"
+        msg['To'] = destino_email
+        msg['Subject'] = "🔐 Sua Senha Provisória - FAMT Control"
+        
+        corpo = f"""
         <html>
-          <body style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
-            <div style="max-width: 500px; margin: 0 auto; border: 1px solid #7A3FFF; border-radius: 10px; padding: 20px; background-color: #111126; color: #ffffff;">
-              <h2 style="color: #914EFF; text-align: center;">FAMT CONTROL</h2>
-              <p>Olá,</p>
-              <p>Sua conta no <strong>FAMT Control</strong> foi criada com sucesso!</p>
-              <p>Sua senha provisória de acesso é:</p>
-              <div style="background-color: #1E1D3B; padding: 12px; text-align: center; font-size: 20px; font-weight: bold; border-radius: 5px; color: #43C6A6; letter-spacing: 2px;">
-                {senha_provisoria}
-              </div>
-              <p style="margin-top: 15px; font-size: 13px; color: #aaa;">
-                Por motivos de segurança (LGPD), você deverá alterar esta senha no seu primeiro acesso ao sistema.
-              </p>
+        <body style="font-family: Arial, sans-serif; background-color: #0D0E1D; color: #FFFFFF; padding: 20px;">
+            <div style="max-width: 500px; margin: 0 auto; background-color: #1A1C38; padding: 30px; border-radius: 12px; border: 1px solid #7A3FFF;">
+                <h2 style="color: #914EFF; margin-top: 0;">Bem-vindo(a) ao FAMT Control! 💰</h2>
+                <p style="color: #E2E8F0; font-size: 15px;">Sua conta foi criada com sucesso no sistema.</p>
+                <div style="background-color: #0D0E1D; padding: 15px; border-radius: 8px; text-align: center; margin: 20px 0;">
+                    <span style="color: #A0AEC0; font-size: 13px;">SUA SENHA PROVISÓRIA:</span><br>
+                    <strong style="color: #43C6A6; font-size: 22px; letter-spacing: 2px;">{senha_provisoria}</strong>
+                </div>
+                <p style="color: #CBD5E0; font-size: 14px;">No seu primeiro acesso, o sistema solicitará obrigatoriamente a troca por uma senha nova e pessoal.</p>
+                <hr style="border: none; border-top: 1px solid #2D3748; margin: 20px 0;">
+                <p style="color: #718096; font-size: 12px; text-align: center;">FAMT Control — Gestão Financeira Inteligente</p>
             </div>
-          </body>
+        </body>
         </html>
         """
-        msg.attach(MIMEText(corpo_html, "html"))
-        server = smtplib.SMTP(smtp_server, smtp_port)
+        msg.attach(MIMEText(corpo, 'html'))
+
+        server = smtplib.SMTP(server_host, server_port)
         server.starttls()
-        server.login(usuario_email, senha_email)
-        server.sendmail(usuario_email, email_destino, msg.as_string())
+        server.login(sender_email, sender_password)
+        server.send_message(msg)
         server.quit()
         return True
-    except Exception:
+    except Exception as e:
         return False
 
 def _hash_senha(senha: str) -> str:
@@ -1163,7 +1167,7 @@ if st.session_state.usuario_id is None:
                         st.toast("📝 Usuário cadastrado com sucesso!", icon="✅")
                         enviado = enviar_email_provisoria(novo_email, "famt123")
                         if enviado:
-                            st.success("✅ Conta criada com sucesso! Sua senha provisória foi enviada para o seu e-mail.")
+                            st.success("✅ Conta criada com sucesso! A senha provisória foi enviada para o seu e-mail.")
                         else:
                             st.success("✅ Conta criada! Sua senha provisória é: **famt123** (você poderá alterá-la no primeiro acesso).")
                     except (IntegrityError, Exception):
