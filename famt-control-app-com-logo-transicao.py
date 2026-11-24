@@ -4,6 +4,10 @@ from mysql.connector import Error, IntegrityError
 from pathlib import Path
 import pandas as pd
 import hashlib
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
 from datetime import datetime
 import plotly.express as px
 import plotly.graph_objects as go
@@ -25,6 +29,7 @@ st.set_page_config(
 # =============================================================================
 CUSTOM_CSS = """
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 .stApp {
     background: #0D0E1D;
@@ -920,44 +925,17 @@ st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
 # =============================================================================
 # 3. FUNÇÕES DE SUPORTE E CONEXÃO COM BANCO DE DADOS
 # =============================================================================
-@st.cache_data
-def _obter_logo_base64():
+def logo_html(css_class="system-logo"):
+    """Retorna a logo em base64 para funcionar dentro do HTML do Streamlit."""
     import base64
     if not LOGO_PATH.exists():
         return ""
-    return base64.b64encode(LOGO_PATH.read_bytes()).decode("utf-8")
-
-def logo_html(css_class="system-logo"):
-    """Retorna a logo em base64 com cache para evitar piscadas ao recarregar."""
-    b64 = _obter_logo_base64()
-    if not b64:
-        return ""
-    return f'<img class="{css_class}" src="data:image/png;base64,{b64}" alt="FAMT Control">'
-
-@st.cache_resource
-def _obter_pool_mysql():
-    """Cria um pool de conexões persistente com o MySQL para alta performance na nuvem."""
-    try:
-        from mysql.connector.pooling import MySQLConnectionPool
-        return MySQLConnectionPool(
-            pool_name="famt_cloud_pool",
-            pool_size=5,
-            pool_reset_session=True,
-            host=st.secrets["mysql"]["host"],
-            user=st.secrets["mysql"]["user"],
-            password=st.secrets["mysql"]["password"],
-            database=st.secrets["mysql"]["database"],
-            port=int(st.secrets["mysql"].get("port", 3306))
-        )
-    except Exception:
-        return None
+    data = base64.b64encode(LOGO_PATH.read_bytes()).decode("utf-8")
+    return f'<img class="{css_class}" src="data:image/png;base64,{data}" alt="FAMT Control">'
 
 def obter_conexao():
-    """Retorna uma conexão do pool (ou conexão direta) com o banco MySQL."""
+    """Retorna a conexão com o banco MySQL na nuvem via st.secrets do Streamlit."""
     try:
-        pool = _obter_pool_mysql()
-        if pool:
-            return pool.get_connection()
         return mysql.connector.connect(
             host=st.secrets["mysql"]["host"],
             user=st.secrets["mysql"]["user"],
@@ -969,6 +947,55 @@ def obter_conexao():
         st.error(f"❌ Erro de conexão com o banco MySQL: {e}")
         st.info("💡 Certifique-se de configurar as credenciais [mysql] na aba Secrets do Streamlit Cloud.")
         st.stop()
+
+
+def enviar_email_senha_provisoria(email_destino: str, senha_provisoria: str):
+    """Envia e-mail automatizado via SMTP (Gmail) com a senha provisória."""
+    try:
+        if "email" not in st.secrets:
+            return False, "Configuração [email] não encontrada no st.secrets."
+        
+        smtp_server = st.secrets["email"].get("server", "smtp.gmail.com")
+        smtp_port = int(st.secrets["email"].get("port", 587))
+        email_remetente = st.secrets["email"].get("usuario")
+        senha_app = st.secrets["email"].get("senha")
+        
+        if not email_remetente or not senha_app:
+            return False, "Usuário ou senha de e-mail não configurados no st.secrets."
+
+        msg = MIMEMultipart("alternative")
+        msg["Subject"] = "🔑 FAMT Control - Sua Senha Provisória de Acesso"
+        msg["From"] = f"FAMT Control <{email_remetente}>"
+        msg["To"] = email_destino
+
+        corpo_html = f"""
+        <html>
+          <body style="font-family: Arial, sans-serif; background-color: #0D0E1D; color: #F4F2FF; padding: 20px;">
+            <div style="max-width: 500px; margin: 0 auto; background: #181B2C; border: 1px solid #282B45; border-radius: 12px; padding: 24px;">
+              <h2 style="color: #9B63FF; text-align: center; margin-top: 0;">FAMT CONTROL</h2>
+              <p style="color: #D2CEE8;">Olá,</p>
+              <p style="color: #D2CEE8;">Sua conta no <strong>FAMT Control</strong> foi criada com sucesso!</p>
+              <p style="color: #D2CEE8;">Sua senha provisória de acesso ao sistema é:</p>
+              <div style="background: #23263B; padding: 14px; text-align: center; border-radius: 8px; font-size: 22px; font-weight: bold; letter-spacing: 2px; color: #10B981; margin: 18px 0; border: 1px solid #343854;">
+                {senha_provisoria}
+              </div>
+              <p style="font-size: 13px; color: #94A3B8;">Por motivos de segurança, você deverá alterar esta senha no seu primeiro acesso ao sistema.</p>
+              <hr style="border: none; border-top: 1px solid #282B45; margin: 20px 0;">
+              <p style="font-size: 11px; color: #64748B; text-align: center; margin-bottom: 0;">FAMT CONTROL • Gestão Financeira Pessoal</p>
+            </div>
+          </body>
+        </html>
+        """
+        msg.attach(MIMEText(corpo_html, "html"))
+
+        server = smtplib.SMTP(smtp_server, smtp_port, timeout=10)
+        server.starttls()
+        server.login(email_remetente, senha_app)
+        server.sendmail(email_remetente, email_destino, server.as_string())
+        server.quit()
+        return True, "E-mail enviado com sucesso!"
+    except Exception as e:
+        return False, str(e)
 
 def _hash_senha(senha: str) -> str:
     """Gera hash SHA-256 seguro para a senha."""
@@ -1011,7 +1038,20 @@ def inicializar_banco():
             INSERT INTO Usuarios (email, senha_hash, primeiro_acesso)
             VALUES ('thamirys@umc.edu.br', %s, 0);
             """, (_hash_senha("famt123"),))
-                        
+            
+            u_id = cursor.lastrowid
+            demo_data = [
+                (u_id, 1500.00, 'Receita', '2026-09-01 10:00:00', 'Bolsa de Estágio UMC', 'Salário'),
+                (u_id, 320.00, 'Despesa', '2026-09-03 12:30:00', 'Mensalidade Faculdade', 'Educação'),
+                (u_id, 150.00, 'Despesa', '2026-09-05 14:00:00', 'Supermercado', 'Alimentação'),
+                (u_id, 80.00, 'Despesa', '2026-09-07 18:20:00', 'Recarga Bilhete Único', 'Transporte'),
+                (u_id, 52.00, 'Despesa', '2026-09-10 09:15:00', 'Conta de Luz', 'Contas')
+            ]
+            cursor.executemany("""
+            INSERT INTO Transacoes (usuario_id, valor, tipo, data, descricao, categoria)
+            VALUES (%s, %s, %s, %s, %s, %s);
+            """, demo_data)
+            
         conexao.commit()
         conexao.close()
     except Exception as e:
@@ -1123,11 +1163,22 @@ if st.session_state.usuario_id is None:
                     conexao = obter_conexao()
                     cursor = conexao.cursor()
                     try:
+                        senha_prov = "famt123"
                         cursor.execute("INSERT INTO Usuarios (email, senha_hash, primeiro_acesso) VALUES (%s, %s, 1)",
-                                       (novo_email, _hash_senha("famt123")))
+                                       (novo_email, _hash_senha(senha_prov)))
                         conexao.commit()
-                        st.toast("📝 Usuário cadastrado com sucesso!", icon="✅")
-                        st.success("✅ Conta criada! Sua senha provisória é: **famt123** (você poderá alterá-la no primeiro acesso).")
+                        
+                        # Tenta enviar o e-mail via Gmail SMTP
+                        enviado, msg_ret = enviar_email_senha_provisoria(novo_email, senha_prov)
+                        
+                        if enviado:
+                            st.toast("📧 E-mail enviado com sucesso!", icon="✅")
+                            st.success(f"🎉 **Conta criada com sucesso!** Enviamos sua senha provisória para o e-mail: **{novo_email}**.")
+                        else:
+                            st.toast("📝 Usuário cadastrado com sucesso!", icon="✅")
+                            st.success(f"✅ Conta criada! Sua senha provisória é: **{senha_prov}** (você poderá alterá-la no primeiro acesso).")
+                            if "Configuração [email]" in msg_ret or "não configurados" in msg_ret:
+                                st.info("💡 *Dica:* Para enviar as senhas diretamente para a caixa de entrada dos usuários por e-mail, adicione o bloco `[email]` no `secrets.toml` do Streamlit Cloud.")
                     except (IntegrityError, Exception):
                         st.error("❌ Este e-mail já está cadastrado no banco de dados.")
                     finally:
