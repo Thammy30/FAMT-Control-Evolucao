@@ -1,7 +1,7 @@
-import streamlit as st
 import smtplib
-from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+import re
+import streamlit as st
 import mysql.connector
 from mysql.connector import Error, IntegrityError
 from pathlib import Path
@@ -947,53 +947,59 @@ def obter_conexao():
         st.info("💡 Certifique-se de configurar as credenciais [mysql] na aba Secrets do Streamlit Cloud.")
         st.stop()
 
-
-def enviar_email_provisoria(destino_email: str, senha_provisoria: str) -> bool:
-    """Envia e-mail com a senha provisória utilizando as credenciais [email] em st.secrets."""
+def enviar_email_provisoria(destinatario, senha_provisoria):
     try:
         if "email" not in st.secrets:
             return False
-        
-        server_host = st.secrets["email"].get("smtp_server", "smtp.gmail.com")
-        server_port = int(st.secrets["email"].get("smtp_port", 587))
-        sender_email = st.secrets["email"].get("sender_email")
-        sender_password = st.secrets["email"].get("sender_password")
+        smtp_server = st.secrets["email"].get("smtp_server") or st.secrets["email"].get("server") or "smtp.gmail.com"
+        smtp_port = int(st.secrets["email"].get("smtp_port") or st.secrets["email"].get("port") or 587)
+        sender_email = st.secrets["email"].get("sender_email") or st.secrets["email"].get("usuario")
+        sender_password = st.secrets["email"].get("sender_password") or st.secrets["email"].get("senha")
         
         if not sender_email or not sender_password:
             return False
 
-        msg = MIMEMultipart()
-        msg['From'] = f"FAMT Control <{sender_email}>"
-        msg['To'] = destino_email
-        msg['Subject'] = "🔐 Sua Senha Provisória - FAMT Control"
-        
-        corpo = f"""
+        msg = MIMEText(f"""
         <html>
-        <body style="font-family: Arial, sans-serif; background-color: #0D0E1D; color: #FFFFFF; padding: 20px;">
-            <div style="max-width: 500px; margin: 0 auto; background-color: #1A1C38; padding: 30px; border-radius: 12px; border: 1px solid #7A3FFF;">
-                <h2 style="color: #914EFF; margin-top: 0;">Bem-vindo(a) ao FAMT Control! 💰</h2>
-                <p style="color: #E2E8F0; font-size: 15px;">Sua conta foi criada com sucesso no sistema.</p>
-                <div style="background-color: #0D0E1D; padding: 15px; border-radius: 8px; text-align: center; margin: 20px 0;">
-                    <span style="color: #A0AEC0; font-size: 13px;">SUA SENHA PROVISÓRIA:</span><br>
-                    <strong style="color: #43C6A6; font-size: 22px; letter-spacing: 2px;">{senha_provisoria}</strong>
+        <body style="font-family: Arial, sans-serif; color: #333;">
+            <div style="max-width: 500px; padding: 20px; border: 1px solid #7A3FFF; border-radius: 10px; background: #17182D; color: #FFFFFF;">
+                <h2 style="color: #914EFF;">🔐 Sua Senha Provisória - FAMT Control</h2>
+                <p>Olá! Seu cadastro no <b>FAMT Control</b> foi realizado com sucesso.</p>
+                <p>Sua senha provisória de acesso é:</p>
+                <div style="background: #211D42; padding: 15px; text-align: center; font-size: 24px; font-weight: bold; color: #914EFF; border-radius: 8px; letter-spacing: 2px;">
+                    {senha_provisoria}
                 </div>
-                <p style="color: #CBD5E0; font-size: 14px;">No seu primeiro acesso, o sistema solicitará obrigatoriamente a troca por uma senha nova e pessoal.</p>
-                <hr style="border: none; border-top: 1px solid #2D3748; margin: 20px 0;">
-                <p style="color: #718096; font-size: 12px; text-align: center;">FAMT Control — Gestão Financeira Inteligente</p>
+                <p style="font-size: 13px; color: #C8C3DF; margin-top: 15px;">
+                    Por motivos de segurança (LGPD), você deverá alterar esta senha no seu primeiro acesso.
+                </p>
             </div>
         </body>
         </html>
-        """
-        msg.attach(MIMEText(corpo, 'html'))
+        """, "html", "utf-8")
+        msg["Subject"] = "🔐 Sua Senha Provisória - FAMT Control"
+        msg["From"] = sender_email
+        msg["To"] = destinatario
 
-        server = smtplib.SMTP(server_host, server_port)
+        server = smtplib.SMTP(smtp_server, smtp_port)
         server.starttls()
         server.login(sender_email, sender_password)
-        server.send_message(msg)
+        server.sendmail(sender_email, [destinatario], msg.as_string())
         server.quit()
         return True
-    except Exception as e:
+    except Exception:
         return False
+
+def validar_senha_forte(senha: str):
+    if len(senha) < 6:
+        return False, "❌ A nova senha deve ter pelo menos 6 caracteres."
+    if not any(c.isupper() for c in senha):
+        return False, "❌ A nova senha deve conter pelo menos uma letra MAIÚSCULA (A-Z)."
+    if not any(c.isdigit() for c in senha):
+        return False, "❌ A nova senha deve conter pelo menos um NÚMERO (0-9)."
+    especiais = "!@#$%^&*()_+-=[]{};':\",.<>/?|~`"
+    if not any(c in especiais for c in senha):
+        return False, "❌ A nova senha deve conter pelo menos um CARACTERE ESPECIAL (ex: @, #, $, %, !)."
+    return True, ""
 
 def _hash_senha(senha: str) -> str:
     """Gera hash SHA-256 seguro para a senha."""
@@ -1167,7 +1173,7 @@ if st.session_state.usuario_id is None:
                         st.toast("📝 Usuário cadastrado com sucesso!", icon="✅")
                         enviado = enviar_email_provisoria(novo_email, "famt123")
                         if enviado:
-                            st.success("✅ Conta criada com sucesso! A senha provisória foi enviada para o seu e-mail.")
+                            st.success("✅ Conta criada com sucesso! Sua senha provisória foi enviada para o seu e-mail.")
                         else:
                             st.success("✅ Conta criada! Sua senha provisória é: **famt123** (você poderá alterá-la no primeiro acesso).")
                     except (IntegrityError, Exception):
@@ -1184,6 +1190,18 @@ if st.session_state.usuario_id is None:
                 <div class="login-card-subtitle">Informe seu e-mail cadastrado e defina uma nova senha com segurança.</div>
             """, unsafe_allow_html=True)
             
+            st.markdown("""
+            <div style="background: rgba(122, 63, 255, 0.12); border: 1px solid rgba(122, 63, 255, 0.4); border-radius: 8px; padding: 12px; margin-bottom: 15px;">
+                <div style="color: #914EFF; font-weight: bold; margin-bottom: 6px; font-size: 0.95rem;">🛡️ Requisitos Obrigatórios de Segurança (LGPD):</div>
+                <ul style="color: #CBD5E1; font-size: 0.88rem; margin: 0; padding-left: 20px;">
+                    <li>Mínimo de <b>6 caracteres</b></li>
+                    <li>Pelo menos <b>1 letra MAIÚSCULA</b> (A-Z)</li>
+                    <li>Pelo menos <b>1 NÚMERO</b> (0-9)</li>
+                    <li>Pelo menos <b>1 CARACTERE ESPECIAL</b> (ex: @, #, $, %, !)</li>
+                </ul>
+            </div>
+            """, unsafe_allow_html=True)
+            
             with st.form(key="form_rec_v25"):
                 rec_email = st.text_input("E-mail cadastrado", key="rec_email_v25", placeholder="seu.email@exemplo.com").strip().lower()
                 nova_senha = st.text_input("Nova Senha", type="password", key="rec_nova_senha_v25", placeholder="••••••••").strip()
@@ -1196,10 +1214,12 @@ if st.session_state.usuario_id is None:
                     st.error("❌ Por favor, preencha todos os campos do formulário.")
                 elif nova_senha != confirma_senha:
                     st.error("❌ As senhas digitadas não coincidem. Verifique a confirmação.")
-                elif len(nova_senha) < 4:
-                    st.error("❌ A nova senha deve ter pelo menos 4 caracteres.")
                 else:
-                    conexao = obter_conexao()
+                    senha_valida, msg_erro = validar_senha_forte(nova_senha)
+                    if not senha_valida:
+                        st.error(msg_erro)
+                    else:
+                        conexao = obter_conexao()
                     cursor = conexao.cursor()
                     cursor.execute("SELECT id FROM Usuarios WHERE email = %s", (rec_email,))
                     usr = cursor.fetchone()
@@ -1229,6 +1249,18 @@ elif st.session_state.primeiro_acesso == 1:
         st.warning("⚠️ **Primeiro Acesso Detectado (Conformidade LGPD)**")
         st.info("Por motivos de segurança, é obrigatório alterar sua senha provisória antes de acessar o painel financeiro.")
         
+        st.markdown("""
+        <div style="background: rgba(122, 63, 255, 0.15); border: 1px solid #7A3FFF; border-radius: 10px; padding: 15px; margin-bottom: 15px;">
+            <h4 style="color: #914EFF; margin: 0 0 8px 0; font-size: 1rem;">🛡️ Requisitos Obrigatórios para Senha Forte:</h4>
+            <ul style="color: #E2E8F0; font-size: 0.88rem; margin: 0; padding-left: 20px;">
+                <li>Mínimo de <b>6 caracteres</b></li>
+                <li>Pelo menos <b>1 letra MAIÚSCULA</b> (A-Z)</li>
+                <li>Pelo menos <b>1 NÚMERO</b> (0-9)</li>
+                <li>Pelo menos <b>1 CARACTERE ESPECIAL</b> (ex: @, #, $, %, !)</li>
+            </ul>
+        </div>
+        """, unsafe_allow_html=True)
+        
         with st.form(key="form_primeiro_acesso_lgpd_v25"):
             nova_senha = st.text_input("Digite sua NOVA senha", type="password")
             confirma_senha = st.text_input("Confirme sua NOVA senha", type="password")
@@ -1240,10 +1272,12 @@ elif st.session_state.primeiro_acesso == 1:
                 st.error("❌ A nova senha não pode ser igual à senha provisória.")
             elif nova_senha != confirma_senha:
                 st.error("❌ As senhas digitadas não coincidem.")
-            elif len(nova_senha) < 4:
-                st.error("❌ A senha deve conter pelo menos 4 caracteres.")
             else:
-                novo_hash = _hash_senha(nova_senha)
+                senha_valida, msg_erro = validar_senha_forte(nova_senha)
+                if not senha_valida:
+                    st.error(msg_erro)
+                else:
+                    novo_hash = _hash_senha(nova_senha)
                 conexao = obter_conexao()
                 cursor = conexao.cursor()
                 cursor.execute("""
